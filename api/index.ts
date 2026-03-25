@@ -40,10 +40,12 @@ async function connectToMongo() {
 // 4. Creamos el "Molde" (Esquema) para nuestras cervezas
 const CervezaSchema = new mongoose.Schema(
   {
-    marca: String,
     tipo: String,
-    pais: String,
-    grado_alcohol: Number,
+    descripcion: String,
+    temperatura_ideal: String,
+    copa: String,
+    ABV: String,
+    IBU: String,
     
   },
   {
@@ -82,9 +84,9 @@ app.get("/api/cervezas", async (req: Request, res: Response) => {
     const cervezas = await Cerveza.find(); // Busca todas las cervezas en MongoDB
     res.json(cervezas);
   } catch (error) {
-    console.error("Error al leer frases:", error);
+    console.error("Error al leer cervezas:", error);
     res.status(500).json({
-      error: "No se pudieron obtener las frases",
+      error: "No se pudieron obtener las cervezas",
       detail: error instanceof Error ? error.message : "Error desconocido",
     });
   }
@@ -93,21 +95,21 @@ app.get("/api/cervezas", async (req: Request, res: Response) => {
 // Ruta POST: Sirve para CREAR una nueva cerveza
 app.post("/api/cervezas", async (req: Request, res: Response) => {
   try {
-    const { marca, tipo, pais, grado_alcohol } = req.body;
+    const { tipo, descripcion, temperatura_ideal, copa, ABV, IBU } = req.body;
 
-    if (!marca || !tipo || !pais || !grado_alcohol) {
-      res.status(400).json({ error: "Debes enviar marca, tipo, pais y grado_alcohol" });
+    if (!tipo || !descripcion || !temperatura_ideal || !copa || !ABV || !IBU) {
+      res.status(400).json({ error: "Debes enviar todos los campos requeridos" });
       return;
     }
 
     await connectToMongo();
-    const nuevaCerveza = new Cerveza({ marca, tipo, pais, grado_alcohol }); // Toma los datos que envía el usuario
+    const nuevaCerveza = new Cerveza({ tipo, descripcion, temperatura_ideal, copa, ABV, IBU }); // Toma los datos que envía el usuario
     await nuevaCerveza.save(); // Los guarda en MongoDB
     res.status(201).json(nuevaCerveza); // Responde con la cerveza recién creada
   } catch (error) {
     console.error("Error al crear cerveza:", error);
     res.status(500).json({
-      error: "No se pudo guardar la frase",
+      error: "No se pudo guardar la cerveza",
       detail: error instanceof Error ? error.message : "Error desconocido",
     });
   }
@@ -117,13 +119,13 @@ app.post("/api/cervezas", async (req: Request, res: Response) => {
 app.put("/api/cervezas/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { marca, tipo, pais, grado_alcohol } = req.body;
+    const {tipo, descripcion, temperatura_ideal, copa, ABV, IBU } = req.body;
 
     await connectToMongo();
 
     const cervezaActualizada = await Cerveza.findByIdAndUpdate(
       id,
-      { marca, tipo, pais, grado_alcohol },
+      { tipo, descripcion, temperatura_ideal, copa, ABV, IBU },
       { new: true } // Para que devuelva el documento actualizado
     );
 
