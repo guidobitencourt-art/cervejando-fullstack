@@ -44,8 +44,8 @@ const CervezaSchema = new mongoose.Schema(
     descripcion: String,
     temperatura_ideal: String,
     copa: String,
-    ABV: String,
-    IBU: String,
+    abv: String,
+    ibu: String,
     
   },
   {
@@ -95,15 +95,15 @@ app.get("/api/cervezas", async (req: Request, res: Response) => {
 // Ruta POST: Sirve para CREAR una nueva cerveza
 app.post("/api/cervezas", async (req: Request, res: Response) => {
   try {
-    const { tipo, descripcion, temperatura_ideal, copa, ABV, IBU } = req.body;
+    const { tipo, descripcion, temperatura_ideal, copa, abv, ibu } = req.body;
 
-    if (!tipo || !descripcion || !temperatura_ideal || !copa || !ABV || !IBU) {
+    if (!tipo || !descripcion || !temperatura_ideal || !copa || !abv || !ibu) {
       res.status(400).json({ error: "Debes enviar todos los campos requeridos" });
       return;
     }
 
     await connectToMongo();
-    const nuevaCerveza = new Cerveza({ tipo, descripcion, temperatura_ideal, copa, ABV, IBU }); // Toma los datos que envía el usuario
+    const nuevaCerveza = new Cerveza({ tipo, descripcion, temperatura_ideal, copa, abv, ibu }); // Toma los datos que envía el usuario
     await nuevaCerveza.save(); // Los guarda en MongoDB
     res.status(201).json(nuevaCerveza); // Responde con la cerveza recién creada
   } catch (error) {
@@ -119,13 +119,13 @@ app.post("/api/cervezas", async (req: Request, res: Response) => {
 app.put("/api/cervezas/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const {tipo, descripcion, temperatura_ideal, copa, ABV, IBU } = req.body;
+    const {tipo, descripcion, temperatura_ideal, copa, abv, ibu } = req.body;
 
     await connectToMongo();
 
     const cervezaActualizada = await Cerveza.findByIdAndUpdate(
       id,
-      { tipo, descripcion, temperatura_ideal, copa, ABV, IBU },
+      { tipo, descripcion, temperatura_ideal, copa, abv, ibu },
       { new: true } // Para que devuelva el documento actualizado
     );
 
